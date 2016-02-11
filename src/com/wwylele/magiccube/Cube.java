@@ -29,7 +29,7 @@ public class Cube {
         Matrix.setIdentityM(mtxModel, 0);
         Matrix.scaleM(mtxModel, 0, 1.0f / size, 1.0f / size, 1.0f / size);
         Matrix.rotateM(mtxModel, 0, rotatePhi, 0, 1, 0);
-        Matrix.rotateM(mtxModel, 0, rotateTheta, 0, 0, -1);
+        Matrix.rotateM(mtxModel, 0, rotateTheta, 0, 0, 1);
     }
 
     public Sticker getSticker(int face, int u, int v) {

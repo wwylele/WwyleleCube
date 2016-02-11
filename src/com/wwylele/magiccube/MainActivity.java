@@ -111,20 +111,21 @@ public class MainActivity extends Activity {
                 switch (e.getAction()) {
                 case MotionEvent.ACTION_MOVE:
                     if (motionState == MOTION_ROTATING) {
-                        // TODO replace by a better method
+                        // TODO need a better rotation method
                         float dx = x - previousX;
                         float dy = y - previousY;
-
-                        cube.rotateTheta -= dx / MainRenderer.viewDistance;
+                        if (Math.abs(cube.rotatePhi) > 90) dx = -dx;
+                        // TODO: what is the correct proportion?
+                        cube.rotateTheta += dx / MainRenderer.viewDistance;
                         if (cube.rotateTheta > 360)
                             cube.rotateTheta -= 360;
                         if (cube.rotateTheta < 0)
                             cube.rotateTheta += 360;
                         cube.rotatePhi += dy / MainRenderer.viewDistance;
-                        if (cube.rotatePhi > 90)
-                            cube.rotatePhi = 90;
-                        if (cube.rotatePhi < -90)
-                            cube.rotatePhi = -90;
+                        if (cube.rotatePhi > 180)
+                            cube.rotatePhi -= 360;
+                        if (cube.rotatePhi < -180)
+                            cube.rotatePhi += 360;
                         cube.updateModelMatrix();
 
                     } else if (motionState == MOTION_TURN) {
