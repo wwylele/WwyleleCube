@@ -11,8 +11,6 @@ public class MainRenderer implements Renderer {
 
     public final float[] mtxProj = new float[16];
     public final float[] mtxView = new float[16];
-    //public final float[] invProj = new float[16];
-    //public final float[] invView = new float[16];
 
     public static final float viewDistance = 3.5f;
 
@@ -37,7 +35,6 @@ public class MainRenderer implements Renderer {
         GLES20.glViewport(0, 0, width, height);
         float ratio = (float) width / height;
         Matrix.perspectiveM(mtxProj, 0, 45, ratio, 1, 100);
-        //Matrix.invertM(invProj, 0, mtxProj, 0);
     }
 
     @Override
@@ -47,7 +44,6 @@ public class MainRenderer implements Renderer {
         GLES20.glDepthFunc(GLES20.GL_LESS);
         Sticker.init(resource, this);
         Matrix.setLookAtM(mtxView, 0, viewDistance, 0, 0, 0, 0, 0, 0, 0, 1);
-        //Matrix.invertM(invView, 0, mtxView, 0);
     }
 
 }

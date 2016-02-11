@@ -8,6 +8,8 @@ import android.opengl.Matrix;
 import android.util.Log;
 
 public class Sticker {
+
+    // IDs of shader's staff
     private static int program;
     private static int att_vPosition, att_vNormal;
     private static int uni_stickerColor;
@@ -15,17 +17,23 @@ public class Sticker {
     private static int uni_mtxModel;
     private static int uni_highlight;
 
-    static final float stickerSize = 0.45f;
-    private static final float stickerCoords[] = { // in counterclockwise order:
-            stickerSize, stickerSize, 0.5f, 0.0f, 0.0f, 1.0f, -stickerSize, -stickerSize, 0.5f, 0.0f, 0.0f, 1.0f,
-            stickerSize, -stickerSize, 0.5f, 0.0f, 0.0f, 1.0f, stickerSize, stickerSize, 0.5f, 0.0f, 0.0f, 1.0f,
-            -stickerSize, stickerSize, 0.5f, 0.0f, 0.0f, 1.0f, -stickerSize, -stickerSize, 0.5f, 0.0f, 0.0f, 1.0f, };
+    private static final float stickerSize = 0.45f;
+    private static final float stickerCoords[] = {
+            stickerSize, stickerSize, 0.5f, 0.0f, 0.0f, 1.0f,
+            -stickerSize, -stickerSize, 0.5f, 0.0f, 0.0f, 1.0f,
+            stickerSize, -stickerSize, 0.5f, 0.0f, 0.0f, 1.0f,
+            stickerSize, stickerSize, 0.5f, 0.0f, 0.0f, 1.0f,
+            -stickerSize, stickerSize, 0.5f, 0.0f, 0.0f, 1.0f,
+            -stickerSize, -stickerSize, 0.5f, 0.0f, 0.0f, 1.0f, };
 
     private static int vertexBuffer;
     private static MainRenderer renderer;
 
+    // should be called before drawing any stickers in GLES thread
     public static void init(Resources res, MainRenderer mainRenderer) {
         renderer = mainRenderer;
+
+        // compile shader
         int vShader = GLES20.glCreateShader(GLES20.GL_VERTEX_SHADER);
         int fShader = GLES20.glCreateShader(GLES20.GL_FRAGMENT_SHADER);
 
@@ -59,6 +67,7 @@ public class Sticker {
         GLES20.glAttachShader(program, fShader);
         GLES20.glLinkProgram(program);
 
+        // shader IDs
         att_vPosition = GLES20.glGetAttribLocation(program, "vPosition");
         att_vNormal = GLES20.glGetAttribLocation(program, "vNormal");
 
@@ -68,6 +77,7 @@ public class Sticker {
         uni_mtxModel = GLES20.glGetUniformLocation(program, "mtxModel");
         uni_highlight = GLES20.glGetUniformLocation(program, "highlight");
 
+        // prepare vertices
         FloatBuffer fb = FloatBuffer.allocate(stickerCoords.length);
         fb.put(stickerCoords);
         fb.position(0);
@@ -82,7 +92,6 @@ public class Sticker {
     private Cube cube;
     private int face, u, v;
     public int color;
-    
 
     public Sticker(Cube cube, int face, int u, int v) {
         this.cube = cube;
@@ -91,35 +100,46 @@ public class Sticker {
         this.v = v;
     }
 
-    private static final float[][] paints = { { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f },
-            { 0.0f, 1.0f, 1.0f }, { 1.0f, 0.0f, 1.0f }, { 1.0f, 1.0f, 0.0f } };
+    private static final float[][] paints = {
+            { 1.0f, 0.0f, 0.0f },
+            { 0.0f, 1.0f, 0.0f },
+            { 0.0f, 0.0f, 1.0f },
+            { 0.0f, 1.0f, 1.0f },
+            { 1.0f, 0.0f, 1.0f },
+            { 1.0f, 1.0f, 0.0f }
+    };
 
-    public boolean turning=false;
+    public boolean turning = false;
+
     void draw() {
         GLES20.glUseProgram(program);
 
+        // set view matrix and projection matrix
         GLES20.glUniformMatrix4fv(Sticker.uni_mtxProj, 1, false, renderer.mtxProj, 0);
         GLES20.glUniformMatrix4fv(Sticker.uni_mtxView, 1, false, renderer.mtxView, 0);
 
-        float[] mtxModel = new float[16], mtxModelFinal = new float[16];
-        Matrix.setIdentityM(mtxModel, 0);
-        if(turning){
-            float axis=cube.turningAxis<3?-1.0f:1.0f;
-            switch(cube.turningAxis){
+        // set model matrix
+        float[] mtxModel = cube.mtxModel.clone();// the matrix is based on the
+                                                 // cube model matrix
+        // apply turning
+        if (turning) {
+            float axis = cube.getTurningAxis() < 3 ? -1.0f : 1.0f;
+            switch (cube.getTurningAxis()) {
             case 0:
             case 3:
-                Matrix.rotateM(mtxModel, 0, cube.turningAngle, axis, 0, 0);
+                Matrix.rotateM(mtxModel, 0, cube.getTurningAngle(), axis, 0, 0);
                 break;
             case 1:
             case 4:
-                Matrix.rotateM(mtxModel, 0, cube.turningAngle, 0, axis, 0);
+                Matrix.rotateM(mtxModel, 0, cube.getTurningAngle(), 0, axis, 0);
                 break;
             case 2:
             case 5:
-                Matrix.rotateM(mtxModel, 0, cube.turningAngle, 0, 0, axis);
+                Matrix.rotateM(mtxModel, 0, cube.getTurningAngle(), 0, 0, axis);
                 break;
             }
         }
+        // apply different orientation and position for stickers
         float posOffset = -(cube.getSize() - 1) * 0.5f;
         Matrix.translateM(mtxModel, 0, posOffset, posOffset, posOffset);
         switch (face) {
@@ -147,13 +167,15 @@ public class Sticker {
             Matrix.rotateM(mtxModel, 0, 180, 1, 0, 0);
             break;
         }
-        Matrix.multiplyMM(mtxModelFinal, 0, cube.mtxModel, 0, mtxModel, 0);
-        GLES20.glUniformMatrix4fv(uni_mtxModel, 1, false, mtxModelFinal, 0);
-        
-        GLES20.glUniform1i(uni_highlight, 
-                (cube.selectFace==face && 
-                cube.selectU==u &&
-                cube.selectV==v)?1:0);
+        GLES20.glUniformMatrix4fv(uni_mtxModel, 1, false, mtxModel, 0);
+
+        // highlight the sticker if user hits it
+        GLES20.glUniform1i(uni_highlight,
+                (cube.selectFace == face &&
+                        cube.selectU == u &&
+                        cube.selectV == v) ? 1 : 0);
+
+        // draw the sticker
 
         GLES20.glEnableVertexAttribArray(att_vPosition);
         GLES20.glEnableVertexAttribArray(att_vNormal);
