@@ -1,0 +1,33 @@
+attribute vec3 vPosition;
+attribute vec3 vNormal;
+uniform vec3 stickerColor;
+uniform mat4 mtxModel;
+uniform mat4 mtxView;
+uniform mat4 mtxProj;
+uniform int highlight;
+varying vec4 vColor;
+void main() {
+	vec3 vertexNormal_viewSpace,eyeDirection_viewSpace,lightDirection_viewSpace;
+	vertexNormal_viewSpace=(mtxView* mtxModel*vec4(vNormal,0)).xyz;
+	eyeDirection_viewSpace=vec3(0,0,0)- (mtxView* mtxModel*  vec4(vPosition,1)).xyz;
+	lightDirection_viewSpace=eyeDirection_viewSpace +(mtxView* vec4(4,4,4,1)).xyz;
+	
+	if(dot(vertexNormal_viewSpace,eyeDirection_viewSpace)>0.0){
+		vec3 n,e,l;
+		n=normalize(vertexNormal_viewSpace);
+    	l=normalize(lightDirection_viewSpace);
+	
+		if(highlight==1){
+			vColor=vec4(stickerColor,1);
+		}else{
+		vColor=vec4(
+		    stickerColor*0.4 + 
+		    vec3(1,1,1)*0.6*clamp(dot(n,l),0.0,1.0),
+		    1);
+		}
+	}else vColor=vec4(stickerColor*0.2,1);
+	
+	
+	
+	gl_Position = mtxProj*mtxView*mtxModel*vec4(vPosition,1);
+}
