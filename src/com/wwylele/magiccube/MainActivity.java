@@ -12,7 +12,21 @@ public class MainActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         view=new CubeView(this);
-
         setContentView(view);
+        
+
+        if (savedInstanceState != null) {
+            cube.deserialize(savedInstanceState.getByteArray("cube"));
+        } else {
+            
+        }
+    }
+    
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        
+        savedInstanceState.putByteArray("cube",cube.serialize());
+
+        super.onSaveInstanceState(savedInstanceState);
     }
 }

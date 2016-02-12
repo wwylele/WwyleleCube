@@ -2,6 +2,9 @@ package com.wwylele.magiccube;
 
 import android.opengl.Matrix;
 import android.os.SystemClock;
+import android.util.Log;
+
+import java.io.*;
 /*
  * stickers coordinates:
  * | faceId | faceDirection | u  | v  |
@@ -37,6 +40,7 @@ public class Cube {
     }
 
     public Cube(int size) {
+        Log.d("wwy", "cons");
         this.size = size;
         stickers = new Sticker[6 * size * size];
 
@@ -51,6 +55,56 @@ public class Cube {
 
         updateModelMatrix();
         lastFrameTime = SystemClock.elapsedRealtime();
+    }
+    
+    public byte[] serialize(){
+        Log.d("wwy", "ser");
+        ByteArrayOutputStream ostream=new ByteArrayOutputStream();
+        DataOutputStream dostream=new DataOutputStream(ostream);
+        try{
+            dostream.writeInt(size);
+            for (int face = 0; face < 6; ++face) {
+                for (int u = 0; u < size; ++u) {
+                    for (int v = 0; v < size; ++v) {
+                        dostream.writeInt(getSticker(face,u,v).color);
+                    }
+                }
+            }
+            dostream.writeFloat(rotateTheta);
+            dostream.writeFloat(rotatePhi);
+            dostream.close();
+        }catch(IOException e){
+            return null;
+        }
+        return ostream.toByteArray();
+    }
+    
+    public void deserialize(byte[] data){
+        if(data==null)return;
+        Log.d("wwy", "des");
+        ByteArrayInputStream istream=new ByteArrayInputStream(data);
+        DataInputStream distream=new DataInputStream(istream);
+        try{
+            size=distream.readInt();
+            stickers = new Sticker[6 * size * size];
+            for (int face = 0; face < 6; ++face) {
+                for (int u = 0; u < size; ++u) {
+                    for (int v = 0; v < size; ++v) {
+                        stickers[(face * size + u) * size + v] = new Sticker(this, face, u, v);
+                        stickers[(face * size + u) * size + v].color = distream.readInt();
+                    }
+                }
+            }
+            rotateTheta=distream.readFloat();
+            rotatePhi=distream.readFloat();
+            distream.close();
+        }catch(IOException e){
+            // TODO
+        }
+        updateModelMatrix();
+        selectFace=-1;
+        turning=false;
+        turningAngle=0;
     }
 
     public int getSize() {
