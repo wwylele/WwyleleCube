@@ -12,7 +12,6 @@ public class MainActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         view=new CubeView(this);
-        getActionBar().hide();
 
         setContentView(view);
     }
