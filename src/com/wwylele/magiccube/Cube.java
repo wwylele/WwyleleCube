@@ -23,7 +23,7 @@ public class Cube {
     private Sticker[] stickers;
 
     public final float[] mtxModel = new float[16];
-    public float rotateTheta = 30, rotatePhi = 45;
+    public float rotateTheta, rotatePhi;
 
     public int selectFace = -1;
     public int selectU, selectV;
@@ -39,8 +39,8 @@ public class Cube {
     public Sticker getSticker(int face, int u, int v) {
         return stickers[(face * size + u) * size + v];
     }
-    
-    private void clearStickersTurningFlag(){
+
+    private void clearStickersTurningFlag() {
         for (int face = 0; face < 6; ++face) {
             for (int u = 0; u < size; ++u) {
                 for (int v = 0; v < size; ++v) {
@@ -49,67 +49,69 @@ public class Cube {
             }
         }
     }
-    
-    synchronized public void scramble(){
+
+    synchronized public void scramble() {
         if (turning) return;
-        
+
         // TODO better algorithm
-        Random random=new Random();
-        for(int i=0;i<1000;++i){
-            turn(random.nextInt(6),random.nextInt(size));
-            turning=false;
+        Random random = new Random();
+        for (int i = 0; i < 1000; ++i) {
+            turn(random.nextInt(6), random.nextInt(size));
+            turning = false;
         }
         clearStickersTurningFlag();
         turningAngle = 0.0f;
     }
 
-    public Cube(int size) {
-        Log.d("wwy", "cons");
+    synchronized public void init(int size) {
         this.size = size;
         stickers = new Sticker[6 * size * size];
-
         for (int face = 0; face < 6; ++face) {
             for (int u = 0; u < size; ++u) {
                 for (int v = 0; v < size; ++v) {
                     stickers[(face * size + u) * size + v] = new Sticker(this, face, u, v);
-                    stickers[(face * size + u) * size + v].color = face;// TODO
+                    stickers[(face * size + u) * size + v].color = face;
                 }
             }
         }
-
+        rotateTheta = 30;
+        rotatePhi = 45;
         updateModelMatrix();
+    }
+
+    public Cube() {
         lastFrameTime = SystemClock.elapsedRealtime();
     }
-    
-    synchronized public byte[] serialize(){
+
+    synchronized public byte[] serialize() {
         Log.d("wwy", "ser");
-        ByteArrayOutputStream ostream=new ByteArrayOutputStream();
-        DataOutputStream dostream=new DataOutputStream(ostream);
-        try{
+        ByteArrayOutputStream ostream = new ByteArrayOutputStream();
+        DataOutputStream dostream = new DataOutputStream(ostream);
+        try {
             dostream.writeInt(size);
             for (int face = 0; face < 6; ++face) {
                 for (int u = 0; u < size; ++u) {
                     for (int v = 0; v < size; ++v) {
-                        dostream.writeInt(getSticker(face,u,v).color);
+                        dostream.writeInt(getSticker(face, u, v).color);
                     }
                 }
             }
             dostream.writeFloat(rotateTheta);
             dostream.writeFloat(rotatePhi);
             dostream.close();
-        }catch(IOException e){
+        } catch (IOException e) {
             return null;
         }
         return ostream.toByteArray();
     }
-    
-    synchronized public void deserialize(byte[] data){
-        if(data==null)return;
+
+    synchronized public void deserialize(byte[] data) {
+        if (data == null) return;
         Log.d("wwy", "des");
-        ByteArrayInputStream istream=new ByteArrayInputStream(data);
-        DataInputStream distream=new DataInputStream(istream);
-        try{
-            size=distream.readInt();
+        ByteArrayInputStream istream = new ByteArrayInputStream(data);
+        DataInputStream distream = new DataInputStream(istream);
+        try {
+            size = distream.readInt();
             stickers = new Sticker[6 * size * size];
             for (int face = 0; face < 6; ++face) {
                 for (int u = 0; u < size; ++u) {
@@ -119,16 +121,16 @@ public class Cube {
                     }
                 }
             }
-            rotateTheta=distream.readFloat();
-            rotatePhi=distream.readFloat();
+            rotateTheta = distream.readFloat();
+            rotatePhi = distream.readFloat();
             distream.close();
-        }catch(IOException e){
+        } catch (IOException e) {
             // TODO
         }
         updateModelMatrix();
-        selectFace=-1;
-        turning=false;
-        turningAngle=0;
+        selectFace = -1;
+        turning = false;
+        turningAngle = 0;
     }
 
     public int getSize() {

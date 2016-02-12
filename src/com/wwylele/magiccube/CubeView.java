@@ -11,10 +11,10 @@ public class CubeView extends GLSurfaceView {
     private final MainRenderer renderer;
     private Cube cube;
 
-    public CubeView(Context context){
+    public CubeView(Context context) {
         super(context);
         setEGLContextClientVersion(2);
-        cube = ((MainActivity)context).cube;
+        cube = ((MainActivity) context).cube;
         renderer = new MainRenderer(context.getResources(), cube);
         setRenderer(renderer);
         setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
@@ -42,9 +42,9 @@ public class CubeView extends GLSurfaceView {
     private boolean testRayInModel(float[] from, float[] direction, int face,
             /* out */float[/* 3 */] tuv
     /*
-     * the @param tuv is used for receiving three value: t - the
-     * 'distance' to reach the intersection. u, v - the u and v
-     * coordinates of the intersection, both range in [0, size].
+     * the @param tuv is used for receiving three value: t - the 'distance' to
+     * reach the intersection. u, v - the u and v coordinates of the
+     * intersection, both range in [0, size].
      */
     ) {
         boolean in;
