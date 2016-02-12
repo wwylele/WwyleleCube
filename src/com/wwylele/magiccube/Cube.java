@@ -50,7 +50,7 @@ public class Cube {
         }
     }
     
-    synchronized public void shuffle(){
+    synchronized public void scramble(){
         if (turning) return;
         
         // TODO better algorithm
