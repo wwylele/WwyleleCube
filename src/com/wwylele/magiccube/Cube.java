@@ -1,5 +1,6 @@
 package com.wwylele.magiccube;
 
+import android.media.SoundPool;
 import android.opengl.Matrix;
 import android.os.SystemClock;
 import android.util.Log;
@@ -19,6 +20,9 @@ import java.io.*;
  */
 
 public class Cube {
+    public static SoundPool soundPool;
+    public static int[] soundId;
+    
     private int size;
     private Sticker[] stickers;
 
@@ -27,6 +31,8 @@ public class Cube {
 
     public int selectFace = -1;
     public int selectU, selectV;
+    
+    private Random random = new Random();
 
     // updateModelMatrix from rotateTheta and rotatePhi
     synchronized public void updateModelMatrix() {
@@ -54,7 +60,6 @@ public class Cube {
         if (turning) return;
 
         // TODO better algorithm
-        Random random = new Random();
         for (int i = 0; i < 1000; ++i) {
             turn(random.nextInt(6), random.nextInt(size));
             turning = false;
@@ -137,8 +142,18 @@ public class Cube {
         return size;
     }
 
+    private float[] soundPitch={
+            1.0f,
+            9.0f/8,
+            5.0f/4,
+            4.0f/3,
+            3.0f/2,
+            5.0f/3,
+            15.0f/8,
+            2
+    };
     private long lastFrameTime;
-
+    
     synchronized public void draw() {
         long currentTime = SystemClock.elapsedRealtime();
         long deltaTime = currentTime - lastFrameTime;
@@ -152,6 +167,8 @@ public class Cube {
                 turningAngle = 0.0f;
                 turning = false;
                 clearStickersTurningFlag();
+                soundPool.play(soundId[0],
+                        1,1,1,0,soundPitch[random.nextInt(8)]);
             }
         }
 

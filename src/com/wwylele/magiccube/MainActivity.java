@@ -1,5 +1,7 @@
 package com.wwylele.magiccube;
 
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -12,10 +14,17 @@ public class MainActivity extends AppCompatActivity {
 
     public final Cube cube = new Cube();
     public CubeView cubeView;
+    public SoundPool soundPool;
+    public final int[] soundId=new int[1];
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
+        Cube.soundPool=soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
+        soundId[0]=soundPool.load(this, R.raw.s0, 1);
+        Cube.soundId=soundId;
 
         Toolbar toolbar = new Toolbar(this);
         setSupportActionBar(toolbar);
@@ -36,6 +45,12 @@ public class MainActivity extends AppCompatActivity {
         } else {
             cube.init(3);
         }
+    }
+    
+    @Override
+    public void onDestroy(){
+        soundPool.release();
+        super.onDestroy();
     }
 
     @Override
