@@ -3,8 +3,9 @@ package com.wwylele.magiccube;
 import android.opengl.Matrix;
 import android.os.SystemClock;
 import android.util.Log;
-
+import java.util.Random;
 import java.io.*;
+
 /*
  * stickers coordinates:
  * | faceId | faceDirection | u  | v  |
@@ -38,6 +39,29 @@ public class Cube {
     public Sticker getSticker(int face, int u, int v) {
         return stickers[(face * size + u) * size + v];
     }
+    
+    private void clearStickersTurningFlag(){
+        for (int face = 0; face < 6; ++face) {
+            for (int u = 0; u < size; ++u) {
+                for (int v = 0; v < size; ++v) {
+                    getSticker(face, u, v).turning = false;
+                }
+            }
+        }
+    }
+    
+    synchronized public void shuffle(){
+        if (turning) return;
+        
+        // TODO better algorithm
+        Random random=new Random();
+        for(int i=0;i<1000;++i){
+            turn(random.nextInt(6),random.nextInt(size));
+            turning=false;
+        }
+        clearStickersTurningFlag();
+        turningAngle = 0.0f;
+    }
 
     public Cube(int size) {
         Log.d("wwy", "cons");
@@ -57,7 +81,7 @@ public class Cube {
         lastFrameTime = SystemClock.elapsedRealtime();
     }
     
-    public byte[] serialize(){
+    synchronized public byte[] serialize(){
         Log.d("wwy", "ser");
         ByteArrayOutputStream ostream=new ByteArrayOutputStream();
         DataOutputStream dostream=new DataOutputStream(ostream);
@@ -79,7 +103,7 @@ public class Cube {
         return ostream.toByteArray();
     }
     
-    public void deserialize(byte[] data){
+    synchronized public void deserialize(byte[] data){
         if(data==null)return;
         Log.d("wwy", "des");
         ByteArrayInputStream istream=new ByteArrayInputStream(data);
@@ -125,13 +149,7 @@ public class Cube {
                 // turning finished, remove the mark of this and all stickers
                 turningAngle = 0.0f;
                 turning = false;
-                for (int face = 0; face < 6; ++face) {
-                    for (int u = 0; u < size; ++u) {
-                        for (int v = 0; v < size; ++v) {
-                            getSticker(face, u, v).turning = false;
-                        }
-                    }
-                }
+                clearStickersTurningFlag();
             }
         }
 
@@ -168,7 +186,7 @@ public class Cube {
     }
 
     // begin a turning
-    public void turn(int orientation, int level) {
+    synchronized public void turn(int orientation, int level) {
         if (turning) return;
         turning = true;
         turningAxis = orientation;

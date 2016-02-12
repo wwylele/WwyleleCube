@@ -13,12 +13,10 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         view=new CubeView(this);
         setContentView(view);
-        
-
         if (savedInstanceState != null) {
             cube.deserialize(savedInstanceState.getByteArray("cube"));
         } else {
-            
+            cube.shuffle();
         }
     }
     
