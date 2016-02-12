@@ -12,7 +12,8 @@ public class MainRenderer implements Renderer {
     public final float[] mtxProj = new float[16];
     public final float[] mtxView = new float[16];
 
-    public static final float viewDistance = 3.5f;
+    public static final float viewDistanceConst = 2.3f;
+    public float viewDistance;
 
     private Resources resource;
     private Cube cube;
@@ -63,6 +64,9 @@ public class MainRenderer implements Renderer {
         float ratio = (float) width / height;
         // Matrix.perspectiveM(mtxProj, 0, 45, ratio, 1, 100);
         perspectiveM(mtxProj, 0, 45, ratio, 1, 100);
+        viewDistance=viewDistanceConst;
+        if(ratio<1)viewDistance/=ratio;
+        Matrix.setLookAtM(mtxView, 0, viewDistance, 0, 0, 0, 0, 0, 0, 0, 1);
     }
 
     @Override
@@ -71,7 +75,6 @@ public class MainRenderer implements Renderer {
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
         GLES20.glDepthFunc(GLES20.GL_LESS);
         Sticker.init(resource, this);
-        Matrix.setLookAtM(mtxView, 0, viewDistance, 0, 0, 0, 0, 0, 0, 0, 1);
     }
 
 }

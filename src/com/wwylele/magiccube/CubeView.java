@@ -107,14 +107,15 @@ public class CubeView extends GLSurfaceView {
                 // TODO need a better rotation method
                 float dx = x - previousX;
                 float dy = y - previousY;
+                float s = Math.min(getWidth(), getHeight());
                 if (Math.abs(cube.rotatePhi) > 90) dx = -dx;
                 // TODO: what is the correct proportion?
-                cube.rotateTheta += dx / MainRenderer.viewDistance;
+                cube.rotateTheta += dx / s * MainRenderer.viewDistanceConst * 90;
                 if (cube.rotateTheta > 360)
                     cube.rotateTheta -= 360;
                 if (cube.rotateTheta < 0)
                     cube.rotateTheta += 360;
-                cube.rotatePhi += dy / MainRenderer.viewDistance;
+                cube.rotatePhi += dy / s * MainRenderer.viewDistanceConst * 90;
                 if (cube.rotatePhi > 180)
                     cube.rotatePhi -= 360;
                 if (cube.rotatePhi < -180)
