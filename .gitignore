@@ -1,38 +1,17 @@
-#################
-## Eclipse
-#################
-
-*.pydevproject
-.project
-.metadata
-bin/
-tmp/
-*.tmp
-*.bak
-*.swp
-*~.nib
+.gradle/
+.idea/
+build/
 local.properties
-.classpath
-.settings/
-.loadpath
 
-# External tool builders
-.externalToolBuilders/
-
-# Locally stored "Eclipse launch configurations"
-*.launch
-
-# CDT-specific
-.cproject
-
-# PDT-specific
-.buildpath
-
-
+# Local configuration file (sdk path, etc)
+local.properties
 
 #############
 ## Windows detritus
 #############
+
+# Mac OS X clutter
+*.DS_Store
 
 # Windows image file caches
 Thumbs.db
@@ -48,4 +27,9 @@ $RECYCLE.BIN/
 .DS_Store
 
 
+# generated files
+bin/
 gen/
+
+# Java class files
+*.class
