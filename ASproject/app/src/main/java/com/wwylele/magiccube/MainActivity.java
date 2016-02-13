@@ -55,26 +55,26 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-        case R.id.action_scramble:
-            cube.scramble();
-            return true;
-        case R.id.action_cube2:
-            cube.init(2);
-            return true;
-        case R.id.action_cube3:
-            cube.init(3);
-            return true;
-        case R.id.action_cube4:
-            cube.init(4);
-            return true;
-        case R.id.action_cube5:
-            cube.init(5);
-            return true;
-        case R.id.action_cube6:
-            cube.init(6);
-            return true;
-        default:
-            return super.onOptionsItemSelected(item);
+            case R.id.action_scramble:
+                cube.scramble();
+                return true;
+            case R.id.action_cube2:
+                cube.init(2);
+                return true;
+            case R.id.action_cube3:
+                cube.init(3);
+                return true;
+            case R.id.action_cube4:
+                cube.init(4);
+                return true;
+            case R.id.action_cube5:
+                cube.init(5);
+                return true;
+            case R.id.action_cube6:
+                cube.init(6);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
 
         }
     }

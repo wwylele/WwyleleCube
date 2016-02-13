@@ -3,6 +3,7 @@ package com.wwylele.magiccube;
 import android.opengl.Matrix;
 import android.os.SystemClock;
 import android.util.Log;
+
 import java.util.Random;
 import java.io.*;
 
@@ -204,8 +205,7 @@ public class Cube {
                 for (int v = 0; v < size; ++v) {
                     Sticker a = getSticker(absAxis + 3, u, v);
                     a.turning = true;// mark the sticker to turn
-                    t[u * size + v] = a.color;// store the sticker color for
-                                              // data turning;
+                    t[u * size + v] = a.color;// store the sticker color for data turning;
                 }
             }
             // do data turning
@@ -225,8 +225,7 @@ public class Cube {
                 for (int v = 0; v < size; ++v) {
                     Sticker a = getSticker(absAxis, u, v);
                     a.turning = true;// mark the sticker to turn
-                    t[u * size + v] = a.color;// store the sticker color for
-                                              // data turning;
+                    t[u * size + v] = a.color;// store the sticker color for data turning;
                 }
             }
             // do data turning

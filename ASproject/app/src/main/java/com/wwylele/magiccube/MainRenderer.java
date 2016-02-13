@@ -2,6 +2,7 @@ package com.wwylele.magiccube;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
+
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.Matrix;
@@ -33,7 +34,7 @@ public class MainRenderer implements Renderer {
 
     // Matrix.perspectiveM for low API
     public static void perspectiveM(float[] m, int offset,
-            float fovy, float aspect, float zNear, float zFar) {
+                                    float fovy, float aspect, float zNear, float zFar) {
         float f = 1.0f / (float) Math.tan(fovy * (Math.PI / 360.0));
         float rangeReciprocal = 1.0f / (zNear - zFar);
 
@@ -64,8 +65,8 @@ public class MainRenderer implements Renderer {
         float ratio = (float) width / height;
         // Matrix.perspectiveM(mtxProj, 0, 45, ratio, 1, 100);
         perspectiveM(mtxProj, 0, 45, ratio, 1, 100);
-        viewDistance=viewDistanceConst;
-        if(ratio<1)viewDistance/=ratio;
+        viewDistance = viewDistanceConst;
+        if (ratio < 1) viewDistance /= ratio;
         Matrix.setLookAtM(mtxView, 0, viewDistance, 0, 0, 0, 0, 0, 0, 0, 1);
     }
 

@@ -2,6 +2,7 @@ package com.wwylele.magiccube;
 
 import java.io.*;
 import java.nio.*;
+
 import android.content.res.Resources;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
@@ -24,7 +25,7 @@ public class Sticker {
             stickerSize, -stickerSize, 0.5f, 0.0f, 0.0f, 1.0f,
             stickerSize, stickerSize, 0.5f, 0.0f, 0.0f, 1.0f,
             -stickerSize, stickerSize, 0.5f, 0.0f, 0.0f, 1.0f,
-            -stickerSize, -stickerSize, 0.5f, 0.0f, 0.0f, 1.0f, };
+            -stickerSize, -stickerSize, 0.5f, 0.0f, 0.0f, 1.0f,};
 
     private static int vertexBuffer;
     private static MainRenderer renderer;
@@ -101,12 +102,12 @@ public class Sticker {
     }
 
     private static final float[][] paints = {
-            { 1.0f, 0.0f, 0.0f },
-            { 1.0f, 1.0f, 0.0f },
-            { 0.0f, 0.0f, 1.0f },
-            { 1.0f, 0.5f, 0.0f },
-            { 1.0f, 1.0f, 1.0f },
-            { 0.0f, 1.0f, 0.0f }
+            {1.0f, 0.0f, 0.0f},
+            {1.0f, 1.0f, 0.0f},
+            {0.0f, 0.0f, 1.0f},
+            {1.0f, 0.5f, 0.0f},
+            {1.0f, 1.0f, 1.0f},
+            {0.0f, 1.0f, 0.0f}
     };
 
     public boolean turning = false;
@@ -119,53 +120,53 @@ public class Sticker {
         GLES20.glUniformMatrix4fv(Sticker.uni_mtxView, 1, false, renderer.mtxView, 0);
 
         // set model matrix
-        float[] mtxModel = cube.mtxModel.clone();// the matrix is based on the
-                                                 // cube model matrix
+        float[] mtxModel = cube.mtxModel.clone();// the matrix is based on the cube model matrix
+
         // apply turning
         if (turning) {
             float axis = cube.getTurningAxis() < 3 ? -1.0f : 1.0f;
             switch (cube.getTurningAxis()) {
-            case 0:
-            case 3:
-                Matrix.rotateM(mtxModel, 0, cube.getTurningAngle(), axis, 0, 0);
-                break;
-            case 1:
-            case 4:
-                Matrix.rotateM(mtxModel, 0, cube.getTurningAngle(), 0, axis, 0);
-                break;
-            case 2:
-            case 5:
-                Matrix.rotateM(mtxModel, 0, cube.getTurningAngle(), 0, 0, axis);
-                break;
+                case 0:
+                case 3:
+                    Matrix.rotateM(mtxModel, 0, cube.getTurningAngle(), axis, 0, 0);
+                    break;
+                case 1:
+                case 4:
+                    Matrix.rotateM(mtxModel, 0, cube.getTurningAngle(), 0, axis, 0);
+                    break;
+                case 2:
+                case 5:
+                    Matrix.rotateM(mtxModel, 0, cube.getTurningAngle(), 0, 0, axis);
+                    break;
             }
         }
         // apply different orientation and position for stickers
         float posOffset = -(cube.getSize() - 1) * 0.5f;
         Matrix.translateM(mtxModel, 0, posOffset, posOffset, posOffset);
         switch (face) {
-        case 0:
-            Matrix.translateM(mtxModel, 0, cube.getSize() - 1, u, v);
-            Matrix.rotateM(mtxModel, 0, 90, 0, 1, 0);
-            break;
-        case 1:
-            Matrix.translateM(mtxModel, 0, v, cube.getSize() - 1, u);
-            Matrix.rotateM(mtxModel, 0, 90, -1, 0, 0);
-            break;
-        case 2:
-            Matrix.translateM(mtxModel, 0, u, v, cube.getSize() - 1);
-            break;
-        case 3:
-            Matrix.translateM(mtxModel, 0, 0, v, u);
-            Matrix.rotateM(mtxModel, 0, 90, 0, -1, 0);
-            break;
-        case 4:
-            Matrix.translateM(mtxModel, 0, u, 0, v);
-            Matrix.rotateM(mtxModel, 0, 90, 1, 0, 0);
-            break;
-        case 5:
-            Matrix.translateM(mtxModel, 0, v, u, 0);
-            Matrix.rotateM(mtxModel, 0, 180, 1, 0, 0);
-            break;
+            case 0:
+                Matrix.translateM(mtxModel, 0, cube.getSize() - 1, u, v);
+                Matrix.rotateM(mtxModel, 0, 90, 0, 1, 0);
+                break;
+            case 1:
+                Matrix.translateM(mtxModel, 0, v, cube.getSize() - 1, u);
+                Matrix.rotateM(mtxModel, 0, 90, -1, 0, 0);
+                break;
+            case 2:
+                Matrix.translateM(mtxModel, 0, u, v, cube.getSize() - 1);
+                break;
+            case 3:
+                Matrix.translateM(mtxModel, 0, 0, v, u);
+                Matrix.rotateM(mtxModel, 0, 90, 0, -1, 0);
+                break;
+            case 4:
+                Matrix.translateM(mtxModel, 0, u, 0, v);
+                Matrix.rotateM(mtxModel, 0, 90, 1, 0, 0);
+                break;
+            case 5:
+                Matrix.translateM(mtxModel, 0, v, u, 0);
+                Matrix.rotateM(mtxModel, 0, 180, 1, 0, 0);
+                break;
         }
         GLES20.glUniformMatrix4fv(uni_mtxModel, 1, false, mtxModel, 0);
 

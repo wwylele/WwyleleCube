@@ -24,7 +24,7 @@ public class CubeView extends GLSurfaceView {
     private void pointToModelSpace(float x, float y, float[] from, float[] direction) {
         float[] mtxMV = new float[16];
         Matrix.multiplyMM(mtxMV, 0, renderer.mtxView, 0, cube.mtxModel, 0);
-        int[] view = { 0, 0, getWidth(), getHeight() };
+        int[] view = {0, 0, getWidth(), getHeight()};
         float[] modelSpaceFrom = new float[4], modelSpaceTo = new float[4];
         GLU.gluUnProject(x, getHeight() - y, 1.0f, mtxMV, 0,
                 renderer.mtxProj, 0, view, 0, modelSpaceFrom, 0);
@@ -102,107 +102,107 @@ public class CubeView extends GLSurfaceView {
         float y = e.getY();
 
         switch (e.getAction()) {
-        case MotionEvent.ACTION_MOVE:
-            if (motionState == MOTION_ROTATING) {
-                // TODO need a better rotation method
-                float dx = x - previousX;
-                float dy = y - previousY;
-                float s = Math.min(getWidth(), getHeight());
-                if (Math.abs(cube.rotatePhi) > 90) dx = -dx;
-                // TODO: what is the correct proportion?
-                cube.rotateTheta += dx / s * MainRenderer.viewDistanceConst * 90;
-                if (cube.rotateTheta > 360)
-                    cube.rotateTheta -= 360;
-                if (cube.rotateTheta < 0)
-                    cube.rotateTheta += 360;
-                cube.rotatePhi += dy / s * MainRenderer.viewDistanceConst * 90;
-                if (cube.rotatePhi > 180)
-                    cube.rotatePhi -= 360;
-                if (cube.rotatePhi < -180)
-                    cube.rotatePhi += 360;
-                cube.updateModelMatrix();
+            case MotionEvent.ACTION_MOVE:
+                if (motionState == MOTION_ROTATING) {
+                    // TODO need a better rotation method
+                    float dx = x - previousX;
+                    float dy = y - previousY;
+                    float s = Math.min(getWidth(), getHeight());
+                    if (Math.abs(cube.rotatePhi) > 90) dx = -dx;
+                    // TODO: what is the correct proportion?
+                    cube.rotateTheta += dx / s * MainRenderer.viewDistanceConst * 90;
+                    if (cube.rotateTheta > 360)
+                        cube.rotateTheta -= 360;
+                    if (cube.rotateTheta < 0)
+                        cube.rotateTheta += 360;
+                    cube.rotatePhi += dy / s * MainRenderer.viewDistanceConst * 90;
+                    if (cube.rotatePhi > 180)
+                        cube.rotatePhi -= 360;
+                    if (cube.rotatePhi < -180)
+                        cube.rotatePhi += 360;
+                    cube.updateModelMatrix();
 
-            } else if (motionState == MOTION_TURN) {
+                } else if (motionState == MOTION_TURN) {
 
-                float[] tuv = new float[3];
+                    float[] tuv = new float[3];
+                    float[] from = new float[3], direction = new float[3];
+                    pointToModelSpace(x, y, from, direction);
+                    testRayInModel(from, direction, operatingFace, tuv);
+                    float threshold = cube.getSize() * 0.2f;
+                    if (tuv[1] - operatingU > threshold) {
+                        motionState = MOTION_TURNING;
+                        if (operatingFace < 3) {
+                            cube.turn((operatingFace + 2) % 3, cube.selectV);
+                        } else {
+                            cube.turn((operatingFace + 1) % 3, cube.selectV);
+                        }
+                    } else if (operatingU - tuv[1] > threshold) {
+                        motionState = MOTION_TURNING;
+                        if (operatingFace < 3) {
+                            cube.turn(3 + (operatingFace + 2) % 3, cube.selectV);
+                        } else {
+                            cube.turn(3 + (operatingFace + 1) % 3, cube.selectV);
+                        }
+                    } else if (tuv[2] - operatingV > threshold) {
+                        motionState = MOTION_TURNING;
+                        if (operatingFace < 3) {
+                            cube.turn(3 + (operatingFace + 1) % 3, cube.selectU);
+                        } else {
+                            cube.turn(3 + (operatingFace + 2) % 3, cube.selectU);
+                        }
+                    } else if (operatingV - tuv[2] > threshold) {
+                        motionState = MOTION_TURNING;
+                        if (operatingFace < 3) {
+                            cube.turn((operatingFace + 1) % 3, cube.selectU);
+                        } else {
+                            cube.turn((operatingFace + 2) % 3, cube.selectU);
+                        }
+                    }
+
+                    if (motionState == MOTION_TURNING) {
+                        cube.selectFace = -1;
+                    }
+                }
+
+                break;
+            case MotionEvent.ACTION_UP:
+                cube.selectFace = -1;
+                motionState = MOTION_NONE;
+                break;
+            case MotionEvent.ACTION_DOWN:
+                if (cube.isTurning()) break;// workaround :don't do anything
+                // if the cube is turning
+
+                // test if the user hits the cubic (to turn) or not (to
+                // rotate)
                 float[] from = new float[3], direction = new float[3];
                 pointToModelSpace(x, y, from, direction);
-                testRayInModel(from, direction, operatingFace, tuv);
-                float threshold = cube.getSize() * 0.2f;
-                if (tuv[1] - operatingU > threshold) {
-                    motionState = MOTION_TURNING;
-                    if (operatingFace < 3) {
-                        cube.turn((operatingFace + 2) % 3, cube.selectV);
-                    } else {
-                        cube.turn((operatingFace + 1) % 3, cube.selectV);
+                operatingFace = -1;
+                float t = -1000.0f;
+                for (int face = 0; face < 6; ++face) {
+                    float[] tuv = new float[3];
+                    boolean in = testRayInModel(from, direction, face, tuv);
+                    if (in) {
+                        if (t < tuv[0]) {
+                            t = tuv[0];
+                            operatingFace = face;
+                            operatingU = tuv[1];
+                            operatingV = tuv[2];
+                        }
                     }
-                } else if (operatingU - tuv[1] > threshold) {
-                    motionState = MOTION_TURNING;
-                    if (operatingFace < 3) {
-                        cube.turn(3 + (operatingFace + 2) % 3, cube.selectV);
-                    } else {
-                        cube.turn(3 + (operatingFace + 1) % 3, cube.selectV);
-                    }
-                } else if (tuv[2] - operatingV > threshold) {
-                    motionState = MOTION_TURNING;
-                    if (operatingFace < 3) {
-                        cube.turn(3 + (operatingFace + 1) % 3, cube.selectU);
-                    } else {
-                        cube.turn(3 + (operatingFace + 2) % 3, cube.selectU);
-                    }
-                } else if (operatingV - tuv[2] > threshold) {
-                    motionState = MOTION_TURNING;
-                    if (operatingFace < 3) {
-                        cube.turn((operatingFace + 1) % 3, cube.selectU);
-                    } else {
-                        cube.turn((operatingFace + 2) % 3, cube.selectU);
-                    }
+
                 }
 
-                if (motionState == MOTION_TURNING) {
-                    cube.selectFace = -1;
-                }
-            }
-
-            break;
-        case MotionEvent.ACTION_UP:
-            cube.selectFace = -1;
-            motionState = MOTION_NONE;
-            break;
-        case MotionEvent.ACTION_DOWN:
-            if (cube.isTurning()) break;// workaround :don't do anything
-                                        // if the cube is turning
-
-            // test if the user hits the cubic (to turn) or not (to
-            // rotate)
-            float[] from = new float[3], direction = new float[3];
-            pointToModelSpace(x, y, from, direction);
-            operatingFace = -1;
-            float t = -1000.0f;
-            for (int face = 0; face < 6; ++face) {
-                float[] tuv = new float[3];
-                boolean in = testRayInModel(from, direction, face, tuv);
-                if (in) {
-                    if (t < tuv[0]) {
-                        t = tuv[0];
-                        operatingFace = face;
-                        operatingU = tuv[1];
-                        operatingV = tuv[2];
-                    }
+                if (operatingFace == -1) {
+                    motionState = MOTION_ROTATING;
+                } else {
+                    cube.selectFace = operatingFace;
+                    cube.selectU = clamp((int) operatingU, 0, cube.getSize() - 1);
+                    cube.selectV = clamp((int) operatingV, 0, cube.getSize() - 1);
+                    motionState = MOTION_TURN;
                 }
 
-            }
-
-            if (operatingFace == -1) {
-                motionState = MOTION_ROTATING;
-            } else {
-                cube.selectFace = operatingFace;
-                cube.selectU = clamp((int) operatingU, 0, cube.getSize() - 1);
-                cube.selectV = clamp((int) operatingV, 0, cube.getSize() - 1);
-                motionState = MOTION_TURN;
-            }
-
-            break;
+                break;
         }
 
         previousX = x;
