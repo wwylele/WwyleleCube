@@ -19,7 +19,7 @@ import java.io.*;
  * | 5      | -z            | y  | z  |
  */
 
-public class Cube {
+class Cube {
     private int size;
     private Sticker[] stickers;
 
@@ -37,7 +37,7 @@ public class Cube {
         Matrix.rotateM(mtxModel, 0, rotateTheta, 0, 0, 1);
     }
 
-    public Sticker getSticker(int face, int u, int v) {
+    private Sticker getSticker(int face, int u, int v) {
         return stickers[(face * size + u) * size + v];
     }
 

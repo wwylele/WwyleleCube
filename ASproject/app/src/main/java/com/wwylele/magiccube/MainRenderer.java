@@ -8,16 +8,16 @@ import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.Matrix;
 import android.content.res.Resources;
 
-public class MainRenderer implements Renderer {
+class MainRenderer implements Renderer {
 
     public final float[] mtxProj = new float[16];
     public final float[] mtxView = new float[16];
 
     public static final float viewDistanceConst = 2.3f;
-    public float viewDistance;
+    private float viewDistance;
 
-    private Resources resource;
-    private Cube cube;
+    private final Resources resource;
+    private final Cube cube;
 
     MainRenderer(Resources res, Cube cube) {
         resource = res;
@@ -33,8 +33,8 @@ public class MainRenderer implements Renderer {
     }
 
     // Matrix.perspectiveM for low API
-    public static void perspectiveM(float[] m, int offset,
-                                    float fovy, float aspect, float zNear, float zFar) {
+    private static void perspectiveM(float[] m, int offset,
+                                     float fovy, float aspect, float zNear, float zFar) {
         float f = 1.0f / (float) Math.tan(fovy * (Math.PI / 360.0));
         float rangeReciprocal = 1.0f / (zNear - zFar);
 

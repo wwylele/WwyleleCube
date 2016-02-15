@@ -8,7 +8,7 @@ import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.util.Log;
 
-public class Sticker {
+class Sticker {
 
     // IDs of shader's staff
     private static int program;
@@ -90,8 +90,8 @@ public class Sticker {
         GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, stickerCoords.length * 4, fb, GLES20.GL_STATIC_DRAW);
     }
 
-    private Cube cube;
-    private int face, u, v;
+    private final Cube cube;
+    private final int face,u,v;
     public int color;
 
     public Sticker(Cube cube, int face, int u, int v) {

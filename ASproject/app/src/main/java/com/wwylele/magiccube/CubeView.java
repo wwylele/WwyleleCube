@@ -7,9 +7,9 @@ import android.opengl.GLU;
 import android.opengl.Matrix;
 import android.view.MotionEvent;
 
-public class CubeView extends GLSurfaceView {
+class CubeView extends GLSurfaceView {
     private final MainRenderer renderer;
-    private Cube cube;
+    private final Cube cube;
 
     public CubeView(Context context) {
         super(context);
