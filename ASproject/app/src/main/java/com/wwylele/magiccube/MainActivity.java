@@ -1,5 +1,6 @@
 package com.wwylele.magiccube;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -10,7 +11,7 @@ import android.widget.LinearLayout;
 
 public class MainActivity extends AppCompatActivity {
 
-    public final Cube cube = new Cube();
+    public final Cube cube = new Cube(this);
     public CubeView cubeView;
 
     @Override
@@ -72,6 +73,10 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case R.id.action_cube6:
                 cube.init(6);
+                return true;
+            case R.id.action_settings:
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

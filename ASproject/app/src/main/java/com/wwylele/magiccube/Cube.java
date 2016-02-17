@@ -1,7 +1,9 @@
 package com.wwylele.magiccube;
 
+import android.app.Activity;
 import android.opengl.Matrix;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import java.util.Random;
@@ -80,8 +82,11 @@ class Cube {
         updateModelMatrix();
     }
 
-    public Cube() {
+    private final Activity activity;
+
+    public Cube(Activity activity) {
         lastFrameTime = SystemClock.elapsedRealtime();
+        this.activity = activity;
     }
 
     synchronized public byte[] serialize() {
@@ -140,6 +145,8 @@ class Cube {
 
     private long lastFrameTime;
 
+    private float turningSpeed = 0.35f;
+
     synchronized public void draw() {
         long currentTime = SystemClock.elapsedRealtime();
         long deltaTime = currentTime - lastFrameTime;
@@ -147,7 +154,7 @@ class Cube {
 
         // update turning angle
         if (turning) {
-            turningAngle -= deltaTime * 0.35f;
+            turningAngle -= deltaTime * turningSpeed;
             if (turningAngle < 0) {
                 // turning finished, remove the mark of this and all stickers
                 turningAngle = 0.0f;
@@ -269,5 +276,14 @@ class Cube {
             c.turning = true;
             d.turning = true;
         }
+
+        String speedPref = PreferenceManager
+                .getDefaultSharedPreferences(activity)
+                .getString(
+                        activity.getString(R.string.pref_turn_key),
+                        activity.getString(R.string.pref_turn_default));
+        if (speedPref.equals(activity.getString(R.string.pref_turn_slow_value))) {
+            turningSpeed = 0.35f;
+        } else turningSpeed = 1;
     }
 }

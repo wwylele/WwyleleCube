@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <ListPreference
+        android:title="@string/pref_turn_label"
+        android:key="@string/pref_turn_key"
+        android:entries="@array/pref_turn_item_label"
+        android:entryValues="@array/pref_turn_item_value"
+        android:defaultValue="@string/pref_turn_default" />
+
+</PreferenceScreen>

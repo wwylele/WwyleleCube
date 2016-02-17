@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="pref_turn_item_label">
+        <item>@string/pref_turn_slow_label</item>
+        <item>@string/pref_turn_fast_label</item>
+    </string-array>
+    <string-array name="pref_turn_item_value">
+        <item>@string/pref_turn_slow_value</item>
+        <item>@string/pref_turn_fast_value</item>
+    </string-array>
+</resources>
