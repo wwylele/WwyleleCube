@@ -33,3 +33,5 @@ gen/
 
 # Java class files
 *.class
+
+*.apk
